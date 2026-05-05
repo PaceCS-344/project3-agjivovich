@@ -5,6 +5,7 @@ export default function Contact({ highlight }) {
   const contactInfo = {
     email: "dominicgjivovich@gmail.com",
     linkedin: "https://www.linkedin.com/in/anthonygjivovich/",
+    github: "https://github.com/agjivovich",
   };
 
   return (
@@ -17,6 +18,7 @@ export default function Contact({ highlight }) {
         {(() => {
           const emailMatched = highlight && contactInfo.email.includes(highlight);
           const linkedinMatched = highlight && "linkedin".includes(highlight);
+          const githubMatched = highlight && "github".includes(highlight);
           return (
             <>
               <Button 
@@ -30,6 +32,12 @@ export default function Contact({ highlight }) {
                 className={linkedinMatched ? "button-matched" : ""}
               >
                 💼 LinkedIn
+              </Button>
+              <Button 
+                href={contactInfo.github}
+                className={githubMatched ? "button-matched" : ""}
+              >
+                🐙 GitHub
               </Button>
             </>
           );
