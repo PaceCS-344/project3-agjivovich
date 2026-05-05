@@ -10,82 +10,52 @@ export default function Projects({ highlight }) {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const username = process.env.REACT_APP_GITHUB_USERNAME;
-        const token = process.env.REACT_APP_GITHUB_TOKEN;
+        const username = "agjivovich";
 
-        if (!token || !username) {
-          throw new Error("GitHub token or username not configured. Check .env.local");
+        const response = await fetch(
+          `https://api.github.com/users/${username}/repos?sort=updated&per_page=10`
+        );
+
+        if (!response.ok) {
+          throw new Error(`GitHub API error: ${response.status}`);
         }
 
-        const authSchemes = [
-          `Bearer ${token}`,
-          `token ${token}`,
-        ];
-        const endpoints = [
-          `https://api.github.com/user/repos?sort=updated&per_page=10`,
-          `https://api.github.com/users/${username}/repos?sort=updated&per_page=10`,
-        ];
+        const data = await response.json();
 
-        let response = null;
-        let data = null;
+        const filtered = data.filter((repo) => repo.owner?.login === username).slice(0, 10);
 
-        for (const scheme of authSchemes) {
-          for (const endpoint of endpoints) {
-            response = await fetch(endpoint, {
-              headers: {
-                Authorization: scheme,
-                Accept: "application/vnd.github+json",
-              },
-            });
-
-            if (response.ok) {
-              data = await response.json();
-              break;
+        // Fetch languages for each repo
+        const formattedProjects = await Promise.all(
+          filtered.map(async (repo) => {
+            let languages = [];
+            try {
+              const langResponse = await fetch(repo.languages_url);
+              if (langResponse.ok) {
+                const langData = await langResponse.json();
+                languages = Object.keys(langData);
+              }
+            } catch {
+              // ignore language fetch errors
             }
 
-            if (response.status === 401 || response.status === 403) {
-              continue;
-            }
-          }
-
-          if (data) {
-            break;
-          }
-        }
-
-        if (!response || !response.ok) {
-          let message = `GitHub API error: ${response ? response.status : "unknown"}`;
-          try {
-            const body = response ? await response.json() : null;
-            if (body && body.message) {
-              message += ` - ${body.message}`;
-            }
-          } catch (parseError) {
-            // ignore parse errors
-          }
-          throw new Error(message);
-        }
-
-        // Filter and transform repositories
-        const formattedProjects = data
-          .filter((repo) => repo.owner?.login === username)
-          .map((repo) => ({
-            id: repo.id,
-            title: repo.name,
-            description: repo.description || "No description available yet.",
-            technologies: repo.topics && repo.topics.length > 0 ? repo.topics : ["GitHub"],
-            repoUrl: repo.html_url,
-            homepage: repo.homepage,
-            fork: repo.fork,
-          }))
-          .slice(0, 10); // Limit to 10 projects
+            return {
+              id: repo.id,
+              title: repo.name,
+              description: repo.description || "No description available yet.",
+              technologies: repo.topics && repo.topics.length > 0 ? repo.topics : ["GitHub"],
+              repoUrl: repo.html_url,
+              homepage: repo.homepage,
+              fork: repo.fork,
+              languages: languages.length > 0 ? languages : ["Not specified"],
+            };
+          })
+        );
 
         setProjects(formattedProjects);
         setError(null);
       } catch (err) {
         setError(err.message);
         console.error("Error fetching projects:", err);
-        // Fallback to empty state
         setProjects([]);
       } finally {
         setLoading(false);
@@ -120,6 +90,11 @@ export default function Projects({ highlight }) {
                     </span>
                   );
                 })}
+                {project.languages.map((lang) => (
+                  <span key={lang} className="technology-tag">
+                    {lang}
+                  </span>
+                ))}
               </div>
               <div className="project-links">
                 <Button variant="outline" href={project.repoUrl}>
