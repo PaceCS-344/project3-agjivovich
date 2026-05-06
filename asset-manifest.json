@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/website/static/css/main.b26660c3.css",
+    "main.js": "/website/static/js/main.cd8c2097.js",
+    "static/media/john.gif": "/website/static/media/john.3239b15f822937e041a4.gif",
+    "static/media/lake.jpg": "/website/static/media/lake.b8d56ba134520256793b.jpg",
+    "index.html": "/website/index.html",
+    "main.b26660c3.css.map": "/website/static/css/main.b26660c3.css.map",
+    "main.cd8c2097.js.map": "/website/static/js/main.cd8c2097.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b26660c3.css",
+    "static/js/main.cd8c2097.js"
+  ]
+}
