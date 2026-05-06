@@ -1,5 +1,5 @@
 {
-  "homepage": "https://agjivovich.github.io/website",
+  "homepage": "https://agjivovich.github.io/portfolio",
   "name": "react.proj",
   "version": "0.0.0",
   "main": "/src/index.js",
@@ -8,7 +8,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",  
+      "predeploy": "npm run build",  
 	  "deploy": "gh-pages -d build"
   },
   "dependencies": {
